@@ -1,0 +1,49 @@
+.add-blog .upload-btn {
+  border: 1px solid #10bad4;
+  color: #17a2b8;
+  max-width: 16rem;
+}
+
+.add-blog .upload-btn:hover,
+.add-blog .upload-btn:active {
+  border: 1px solid #17a2b8 !important;
+  color: white;
+  background: #17a2b8 !important;
+  border-radius: 0.25rem;
+}
+
+.blog-group input,
+.blog-group textarea {
+  width: 100%;
+  border: 1px solid #10bad4;
+  background: #efeff5;
+  padding: 10px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.blog-group label {
+  color: gray;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.blog-group input:focus,
+.blog-group textarea:focus {
+  border: 1px solid #10bad4;
+  outline: 0;
+}
+
+.blog-group textarea {
+  resize: none;
+  height: 230px;
+}
+
+.main-button {
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  background: #17a2b8;
+  color: #fff;
+  border: 0;
+}
