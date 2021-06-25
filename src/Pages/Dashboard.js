@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import AddBlog from "../Components/DashBoardComponents/AddBlog/AddBlog";
 import ManageBlog from "../Components/DashBoardComponents/ManageBlog/ManageBlog";
 import Sidebar from "../Components/DashBoardComponents/Sidebar/Sidebar";
+import Footer from "../Components/SharedComponents/Footer/Footer";
 import NavBar from "../Components/SharedComponents/NavBar/NavBar";
 
 const Dashboard = () => {
@@ -30,6 +31,7 @@ const Dashboard = () => {
           </Container>
         </Col>
       </Row>
+      <Footer />
     </>
   );
 };
