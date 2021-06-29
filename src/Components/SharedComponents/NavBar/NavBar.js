@@ -15,10 +15,9 @@ const NavBar = () => {
             <Nav.Link as={Link} to="/home">
               Home
             </Nav.Link>
-            <Nav.Link as={Link} to="/dashboard/profile">
-              Dashboard
-            </Nav.Link>
-            <Button variant="info">Login</Button>
+            <Button variant="info" as={Link} to="/login">
+              Login
+            </Button>
           </Nav>
         </Navbar.Collapse>
       </Container>

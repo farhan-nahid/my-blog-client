@@ -3,6 +3,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import AddBlog from "../Components/DashBoardComponents/AddBlog/AddBlog";
 import ManageBlog from "../Components/DashBoardComponents/ManageBlog/ManageBlog";
+import Profile from "../Components/DashBoardComponents/Profile/Profile";
 import Sidebar from "../Components/DashBoardComponents/Sidebar/Sidebar";
 import Footer from "../Components/SharedComponents/Footer/Footer";
 import NavBar from "../Components/SharedComponents/NavBar/NavBar";
@@ -21,7 +22,7 @@ const Dashboard = () => {
             {
               // Sidebar items
               panel === "profile" ? (
-                <h3>Profile</h3>
+                <Profile />
               ) : panel === "add-blog" ? (
                 <AddBlog />
               ) : panel === "manage-blog" ? (

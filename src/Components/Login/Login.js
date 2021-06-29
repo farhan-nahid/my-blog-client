@@ -1,194 +1,97 @@
-import swal from "@sweetalert/with-react";
-import React, { useContext, useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import firebase from "firebase/app";
+import "firebase/auth";
+import React, { useContext } from "react";
+import { Button, Container, Form } from "react-bootstrap";
 import { useHistory, useLocation } from "react-router-dom";
-import { UserContext } from "../../App";
-import {
-  createUserWithEmailAndPassword,
-  handleGoogleSignIn,
-  handleSignOut,
-  initializeLoginFramework,
-  setJWTToken,
-  signInWithEmailAndPassword,
-} from "./LoginManager";
+import { SignInContext } from "../../App";
+import { firebaseConfig } from "./firebaseConfig";
+import "./Login.css";
+
+if (firebase.apps.length === 0) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 const Login = () => {
-  const { setLoggedInUser } = useContext(UserContext);
-  const [showModal, setShowModal] = useState(false);
-  const [newUser, setNewUser] = useState(false);
-
-  const { register: registerSignIn, handleSubmit: handleSignIn } = useForm();
-  const { register: registerSignUp, handleSubmit: handleSignUp } = useForm();
-
+  const [loggedInUser, setLoggedInUser] = useContext(SignInContext);
   const history = useHistory();
-  const { pathname, ...location } = useLocation();
-  const { from } = location.state || { from: { pathname: "/" } };
-
-  useEffect(() => pathname === "/login" && setShowModal(true), [pathname]);
-
-  const googleSignIn = () => {
-    initializeLoginFramework();
-    const loading = toast.loading("Please wait...");
-    handleGoogleSignIn()
-      .then((res) => {
-        toast.dismiss(loading);
-        handleResponse(res);
-      })
-      .catch((err) => {
-        toast.dismiss(loading);
-        toast.error(err.message);
-      });
+  const location = useLocation();
+  const { from } = location.state || {
+    from: { pathname: "/dashboard/profile" },
   };
 
-  const onSubmit = (data) => {
-    initializeLoginFramework();
-    const loading = toast.loading("Please wait...");
-    const { name, email, password } = data;
+  // input email value
 
-    if (newUser && name && email && password) {
-      createUserWithEmailAndPassword(name, email, password)
-        .then((res) => {
-          res.name = name;
-          toast.dismiss(loading);
-          handleResponse(res);
+  const handleEmail = (e) => {
+    const addEmail = { ...loggedInUser };
+    addEmail.email = e.target.value;
+    setLoggedInUser(addEmail);
+  };
+
+  // input password value
+
+  const handlePassword = (e) => {
+    const addPassword = { ...loggedInUser };
+    addPassword.password = e.target.value;
+    setLoggedInUser(addPassword);
+  };
+
+  // login
+
+  const handleLogin = (e) => {
+    if (loggedInUser.email && loggedInUser.password) {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(loggedInUser.email, loggedInUser.password)
+        .then((userCredential) => {
+          var user = userCredential.user;
+          const userLoggedIn = { ...loggedInUser };
+          userLoggedIn.isSignedIn = true;
+          setLoggedInUser(userLoggedIn);
+          history.replace(from);
         })
-        .catch((err) => {
-          toast.dismiss(loading);
-          toast.error(err.message);
+        .catch((error) => {
+          var errorMessage = error.message;
+          const userError = { ...loggedInUser };
+          userError.isSignedIn = false;
+          userError.error = errorMessage;
+          setLoggedInUser(userError);
         });
-    }
-
-    if (!newUser && email && password) {
-      signInWithEmailAndPassword(email, password)
-        .then((res) => {
-          toast.dismiss(loading);
-          handleResponse(res);
-        })
-        .catch((err) => {
-          toast.dismiss(loading);
-          toast.error(err.message);
-        });
+      e.preventDefault();
     }
   };
 
-  const handleResponse = (res) => {
-    setLoggedInUser(res);
-    setJWTToken();
-    setShowModal(false);
-    history.replace(from);
-    toast.success("Successfully Logged In!");
-    if (res.email === "test@admin.com") {
-      swal({
-        title: "Warning!",
-        content: (
-          <p>
-            You have entered the admin panel for testing.
-            <br />
-            <b>Please do not abuse this facility!</b>
-          </p>
-        ),
-        icon: "warning",
-        buttons: true,
-        dangerMode: true,
-      }).then((ok) => {
-        if (!ok) {
-          handleSignOut().then((res) => {
-            setLoggedInUser(res);
-            toast.error("Logged Out!");
-          });
-        }
-      });
-    }
-  };
   return (
-    <div>
-      <div className={newUser ? "cont s--signup" : "cont"}>
-        <div className="form sign-in">
-          <h2>Sign in</h2>
-          <form onSubmit={handleSignIn(onSubmit)}>
-            <label>
-              <span>Email</span>
-              <input
-                defaultValue="admin@test.gmail"
-                {...registerSignIn("email", { required: true })}
-                type="email"
-              />
-            </label>
-            <label>
-              <span>Password</span>
-              <input
-                defaultValue="admin111"
-                {...registerSignIn("password", { required: true })}
-                type="password"
-              />
-            </label>
-            <p className="forgot-pass">Forgot password?</p>
-            <Button type="submit" variant="info" className="submit">
-              Sign In
-            </Button>
-            <button type="button" onClick={googleSignIn} className="fb-btn">
-              Connect with <span>Google</span>
-            </button>
-          </form>
-        </div>
-        <div className="sub-cont">
-          <div className="img">
-            <div className="img__text m--up">
-              <h2>New here?</h2>
-              <p>Sign up and discover great amount of new opportunities!</p>
-            </div>
-            <div className="img__text m--in">
-              <h2>One of us?</h2>
-              <p>
-                If you already has an account, just sign in. We've missed you!
-              </p>
-            </div>
-            <div onClick={() => setNewUser(!newUser)} className="img__btn">
-              <span className="m--up">Sign Up</span>
-              <span className="m--in">Sign In</span>
-            </div>
-          </div>
-          <div className="form sign-up">
-            <h2>Create Account</h2>
-            <form onSubmit={handleSignUp(onSubmit)}>
-              <label>
-                <span>Name</span>
-                <input
-                  {...registerSignUp("name", { required: true })}
-                  type="text"
-                />
-              </label>
-              <label>
-                <span>Email</span>
-                <input
-                  {...registerSignUp("email", { required: true })}
-                  type="email"
-                />
-              </label>
-              <label>
-                <span>Password</span>
-                <input
-                  {...registerSignUp("password", { required: true })}
-                  type="password"
-                />
-              </label>
-              <Button type="submit" variant="info" className="mt-5">
-                Sign Up
-              </Button>
-              <button
-                type="button"
-                onClick={googleSignIn}
-                className="fb-btn mt-3"
-              >
-                Join with <span>Google</span>
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Container>
+      <h1>Admin Login</h1>
+      <Form onSubmit={handleLogin} className="mt-3">
+        <Form.Control
+          className="input-field"
+          type="text"
+          name="email"
+          onBlur={handleEmail}
+          placeholder="Email"
+          required
+        />
+        <br />
+        <Form.Control
+          className="input-field"
+          type="password"
+          name="password"
+          onBlur={handlePassword}
+          placeholder="Password"
+          required
+        />
+        <br />
+        <Button variant="success" type="submit" value="Login">
+          {" "}
+          Login{" "}
+        </Button>
+      </Form>
+      <br />
+      {!loggedInUser.isSignedIn && (
+        <p style={{ color: "red" }}>You have entered wrong Information</p>
+      )}
+    </Container>
   );
 };
 
