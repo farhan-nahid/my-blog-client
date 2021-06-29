@@ -1,13 +1,14 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, lazy, Suspense, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import BlogDetails from "./Components/HomeComponents/BlogDetails/BlogDetails";
+import loader from "./Components/HomeComponents/spinners/loader.gif";
 import NotFound from "./Components/NotFound/NotFound";
 import PrivateRoute from "./Components/PrivateRoute/PrivateRoute";
-import Dashboard from "./Pages/Dashboard";
-import Home from "./Pages/Home";
-import Login from "./Pages/Login";
+const Dashboard = lazy(() => import("./Pages/Dashboard"));
+const Home = lazy(() => import("./Pages/Home"));
+const Login = lazy(() => import("./Pages/Login"));
 
-export const UserContext = createContext();
 export const SignInContext = createContext();
 
 function App() {
@@ -17,15 +18,18 @@ function App() {
     password: "",
     error: "",
   });
-  const [blog, setBlog] = useState();
+
   return (
-    <UserContext.Provider value={[blog, setBlog]}>
-      <SignInContext.Provider value={[loggedInUser, setLoggedInUser]}>
-        <Router>
-          <Toaster />
+    <SignInContext.Provider value={[loggedInUser, setLoggedInUser]}>
+      <Router>
+        <Toaster />
+        <Suspense fallback={loader}>
           <Switch>
             <Route path="/home">
               <Home />
+            </Route>
+            <Route path="/blog/:id">
+              <BlogDetails />
             </Route>
             <Route path="/login">
               <Login />
@@ -40,9 +44,9 @@ function App() {
               <NotFound />
             </Route>
           </Switch>
-        </Router>
-      </SignInContext.Provider>
-    </UserContext.Provider>
+        </Suspense>
+      </Router>
+    </SignInContext.Provider>
   );
 }
 

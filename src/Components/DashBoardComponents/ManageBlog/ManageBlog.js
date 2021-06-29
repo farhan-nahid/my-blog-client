@@ -12,7 +12,7 @@ const ManageBlog = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/all-blogs")
+      .get("https://ph-my-blog.herokuapp.com/all-blogs")
       .then((res) => {
         setBlogs(res.data);
       })
@@ -31,7 +31,7 @@ const ManageBlog = () => {
         const loading = toast.loading("Deleting...Please wait!");
         const removedBlog = blogs.filter((item) => item._id !== id);
         axios
-          .delete(`http://localhost:5000/delete-blog/${id}`)
+          .delete(`https://ph-my-blog.herokuapp.com/delete-blog/${id}`)
           .then((res) => {
             toast.dismiss(loading);
             if (res.data) {

@@ -1,30 +1,15 @@
-import firebase from "firebase/app";
 import React, { useContext } from "react";
-import { Button, Container } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { SignInContext } from "../../../App";
 
 const Profile = () => {
-  const [loggedInUser, setLoggedInUser] = useContext(SignInContext);
-  const handelSignOut = () => {
-    firebase
-      .auth()
-      .signOut()
-      .then((res) => {
-        const signOutUser = {
-          loggedInUser: false,
-          name: "",
-        };
-        setLoggedInUser(signOutUser);
-      })
-      .catch((err) => {});
-  };
+  const [loggedInUser] = useContext(SignInContext);
+
   return (
     <Container>
-      <h4>{loggedInUser.email}</h4>
-      <p>{loggedInUser.password}</p>
-      <Button variant="danger" onClick={handelSignOut}>
-        Logout
-      </Button>
+      <div className="text-center add-blog shadow rounded py-5">
+        <h4>User Email: {loggedInUser.email}</h4>
+      </div>
     </Container>
   );
 };

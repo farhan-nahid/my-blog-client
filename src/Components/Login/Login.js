@@ -2,6 +2,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import React, { useContext } from "react";
 import { Button, Container, Form } from "react-bootstrap";
+import toast from "react-hot-toast";
 import { useHistory, useLocation } from "react-router-dom";
 import { SignInContext } from "../../App";
 import { firebaseConfig } from "./firebaseConfig";
@@ -38,23 +39,22 @@ const Login = () => {
   // login
 
   const handleLogin = (e) => {
+    const loading = toast.loading("logging in...Please wait!");
     if (loggedInUser.email && loggedInUser.password) {
       firebase
         .auth()
         .signInWithEmailAndPassword(loggedInUser.email, loggedInUser.password)
         .then((userCredential) => {
-          var user = userCredential.user;
+          toast.dismiss(loading);
+          toast.success("Successfully Logged In!");
           const userLoggedIn = { ...loggedInUser };
           userLoggedIn.isSignedIn = true;
           setLoggedInUser(userLoggedIn);
           history.replace(from);
         })
         .catch((error) => {
-          var errorMessage = error.message;
-          const userError = { ...loggedInUser };
-          userError.isSignedIn = false;
-          userError.error = errorMessage;
-          setLoggedInUser(userError);
+          toast.dismiss(loading);
+          toast.error(error.message);
         });
       e.preventDefault();
     }
@@ -69,7 +69,7 @@ const Login = () => {
           type="text"
           name="email"
           onBlur={handleEmail}
-          placeholder="Email"
+          placeholder="Enter Your Email"
           required
         />
         <br />
@@ -78,7 +78,7 @@ const Login = () => {
           type="password"
           name="password"
           onBlur={handlePassword}
-          placeholder="Password"
+          placeholder="Enter Your Password"
           required
         />
         <br />
@@ -87,10 +87,6 @@ const Login = () => {
           Login{" "}
         </Button>
       </Form>
-      <br />
-      {!loggedInUser.isSignedIn && (
-        <p style={{ color: "red" }}>You have entered wrong Information</p>
-      )}
     </Container>
   );
 };

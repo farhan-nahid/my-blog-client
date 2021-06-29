@@ -22,7 +22,7 @@ const AddBlog = () => {
 
     const loading = toast.loading("Adding...Please wait!");
 
-    const url = "http://localhost:5000/add-blogs";
+    const url = "https://ph-my-blog.herokuapp.com/add-blogs";
     fetch(url, {
       method: "POST",
       headers: {

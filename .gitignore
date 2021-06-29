@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 src/Components/Login/firebaseConfig.js
+src/Components/HomeComponents/spinners
 
 # testing
 /coverage
